@@ -558,19 +558,18 @@ https://cdn.jsdelivr.net/npm/eosjs@22.1.0/dist/index.min.js
             setupEventListeners();
             setMinimumDates();
         });
-
-      async function initializeUltra() {
+async function initializeUltra() {
     try {
         if (typeof window.ultra !== 'undefined') {
             ultra = window.ultra;
-            logMessage('Ultra wallet detected and ready', 'success');
-if (typeof window.ultra !== 'undefined') {
-    ultra = window.ultra;
-    logMessage('Ultra wallet detected. Click connect to proceed.', 'success');
-} else {
-    logMessage('Ultra wallet not detected. Please install Ultra wallet extension.', 'warning');
-}
+            logMessage('Ultra wallet detected. Click connect to proceed.', 'success');
 
+            // ✅ محاولة استعادة الاتصال إذا كان مخزّن مسبقًا
+            if (localStorage.getItem('ultraConnected') === 'true') {
+                const account = await ultra.connect();
+                handleConnectionSuccess(account);
+                logMessage('🔁 Restored connection from previous session', 'success');
+            }
         } else {
             logMessage('Ultra wallet not detected. Please install Ultra wallet extension.', 'warning');
         }
@@ -607,6 +606,7 @@ if (typeof window.ultra !== 'undefined') {
         }
 function handleConnectionSuccess(account) {
     isConnected = true;
+   localStorage.setItem('ultraConnected', 'true');
 
     // ✅ استخراج الحساب من داخل account.data.blockchainid
     connectedAccount = account.data?.blockchainid || account.accountName || "unknown";
