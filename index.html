@@ -564,10 +564,13 @@ https://cdn.jsdelivr.net/npm/eosjs@22.1.0/dist/index.min.js
         if (typeof window.ultra !== 'undefined') {
             ultra = window.ultra;
             logMessage('Ultra wallet detected and ready', 'success');
+if (typeof window.ultra !== 'undefined') {
+    ultra = window.ultra;
+    logMessage('Ultra wallet detected. Click connect to proceed.', 'success');
+} else {
+    logMessage('Ultra wallet not detected. Please install Ultra wallet extension.', 'warning');
+}
 
-            // ✅ استدعاء الاتصال مباشرة بدلاً من getAccount()
-            const account = await ultra.connect(); 
-            if (account) handleConnectionSuccess(account);
         } else {
             logMessage('Ultra wallet not detected. Please install Ultra wallet extension.', 'warning');
         }
