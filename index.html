@@ -656,9 +656,9 @@ function handleConnectionSuccess(account) {
                     if (!validateForm(data, 'create')) return;
                     
                     transactionData = {
-                        account: 'eosio.nft.ft',
-                        name: 'createauct.a',
-                        authorization: [{ actor: data.owner, permission: 'active' }],
+                        contract: 'eosio.nft.ft',
+                        action: 'createauct.a',
+                        authorization: [data.owenr],
                         data: {
                             create: {
                                 owner: data.owner,
