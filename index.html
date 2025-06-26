@@ -556,20 +556,23 @@
             setMinimumDates();
         });
 
-        async function initializeUltra() {
-            try {
-                if (typeof window.ultra !== 'undefined') {
-                    ultra = window.ultra;
-                    logMessage('Ultra wallet detected and ready', 'success');
-                    const account = await ultra.getAccount();
-                    if (account) handleConnectionSuccess(account);
-                } else {
-                    logMessage('Ultra wallet not detected. Please install Ultra wallet extension.', 'warning');
-                }
-            } catch (error) {
-                logMessage(`Error initializing Ultra connection: ${error.message}`, 'error');
-            }
+      async function initializeUltra() {
+    try {
+        if (typeof window.ultra !== 'undefined') {
+            ultra = window.ultra;
+            logMessage('Ultra wallet detected and ready', 'success');
+
+            // ✅ استدعاء الاتصال مباشرة بدلاً من getAccount()
+            const account = await ultra.connect(); 
+            if (account) handleConnectionSuccess(account);
+        } else {
+            logMessage('Ultra wallet not detected. Please install Ultra wallet extension.', 'warning');
         }
+    } catch (error) {
+        logMessage(`Error initializing Ultra connection: ${error.message}`, 'error');
+    }
+}
+
 
         function setupEventListeners() {
             document.getElementById('createForm').addEventListener('submit', handleSubmit);
