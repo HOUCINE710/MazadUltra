@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra NFT Auction Management App</title>
+    <style>
+        /* ===== BASE STYLES AND RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        /* ===== HEADER SECTION ===== */
+        .header {
+            background: linear-gradient(45deg, #4c63d2, #7c4dff);
+            padding: 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== CONNECTION STATUS SECTION ===== */
+        .connection-section {
+            padding: 25px;
+            background: #f8f9fa;
+        }
+
+        .connection-status {
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .connected {
+            background: linear-gradient(45deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .disconnected {
+            background: linear-gradient(45deg, #fee2e2, #fecaca);
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+
+        .connect-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #6c75ff, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 auto;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 117, 255, 0.3);
+        }
+
+        /* ===== TAB NAVIGATION ===== */
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e9ecef;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            flex: 1;
+            min-width: 200px;
+            padding: 20px 15px;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            background: rgba(108, 117, 255, 0.1);
+            color: #6c75ff;
+        }
+
+        .tab-button.active {
+            color: #6c75ff;
+            background: white;
+            border-bottom: 3px solid #6c75ff;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #6c75ff;
+        }
+
+        /* ===== TAB CONTENT ===== */
+        .tab-content {
+            display: none;
+            padding: 40px;
+            min-height: 500px;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== FORM STYLES ===== */
+        .form-section h2 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+        .form-section p {
+            margin-bottom: 30px;
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #6c75ff;
+            box-shadow: 0 0 0 3px rgba(108, 117, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .validation-message {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* ===== BUTTON STYLES ===== */
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #6c75ff, #8b5cf6);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ===== LOG SECTION ===== */
+        .log-section {
+            margin-top: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .log-section h3 {
+            margin-bottom: 20px;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .log-entries {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .log-entry {
+            padding: 12px 15px;
+            margin: 0;
+            border-bottom: 1px solid #f1f3f4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-timestamp {
+            color: #6b7280;
+            font-size: 0.8rem;
+            min-width: 80px;
+        }
+
+        .log-success {
+            background: #f0fdf4;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .log-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .log-info {
+            background: #eff6ff;
+            color: #1e40af;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .log-warning {
+            background: #fffbeb;
+            color: #92400e;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .clear-logs-btn {
+            padding: 8px 16px;
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clear-logs-btn:hover {
+            background: #4b5563;
+        }
+
+        /* ===== LOADING STATE ===== */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e9ecef;
+            border-top: 4px solid #6c75ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab-button {
+                min-width: auto;
+                text-align: center;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>🎯 Ultra NFT Auction Manager</h1>
+            <p>Manage your NFT auctions on the Ultra blockchain with ease</p>
+        </div>
+
+        <!-- Connection Status Section -->
+        <div class="connection-section">
+            <div id="connectionStatus" class="connection-status disconnected">
+                🔌 Not connected to Ultra wallet
+            </div>
+            <button id="connectBtn" class="connect-btn">
+                🔗 Connect to Ultra Wallet
+            </button>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('create')">🏗️ Create Auction</button>
+            <button class="tab-button" onclick="showTab('bid')">💰 Place Bid</button>
+            <button class="tab-button" onclick="showTab('settle')">✅ Settle Auction</button>
+            <button class="tab-button" onclick="showTab('cancel')">❌ Cancel Auction</button>
+        </div>
+
+        <!-- Tab Contents -->
+        
+        <!-- Create Auction Tab -->
+        <div id="create" class="tab-content active">
+            <div class="form-section">
+                <h2>🏗️ Create New Auction (createauct.a)</h2>
+                <p>Create a new auction for your NFT on the Ultra blockchain</p>
+                
+                <form id="createAuctionForm" class="form-grid">
+                    <div class="form-group">
+                        <label for="create_owner">👤 NFT Owner</label>
+                        <input type="text" id="create_owner" placeholder="e.g., alice" required>
+                        <div class="validation-message" id="create_owner_error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="create_token_id">🔢 Token ID</label>
+                        <input type="number" id="create_token_id" placeholder="e.g., 1" required min="1">
+                        <div class="validation-message" id="create_token_id_error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="create_starting_price">💰 Starting Price (UOS)</label>
+                        <input type="text" id="create_starting_price" placeholder="e.g., 2.00000000 UOS" required>
+                        <div class="validation-message" id="create_starting_price_error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="create_promoter_bp">📈 Promoter Basis Points (200-1000)</label>
+                        <input type="number" id="create_promoter_bp" min="200" max="1000" value="250" placeholder="250">
+                        <div class="validation-message" id="create_promoter_bp_error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="create_start_date">📅 Start Date (Optional)</label>
+                        <input type="datetime-local" id="create_start_date">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="create_expiry_date">⏰ Expiry Date</label>
+                        <input type="datetime-local" id="create_expiry_date" required>
+                        <div class="validation-message" id="create_expiry_date_error"></div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="create_memo">📝 Memo</label>
+                        <textarea id="create_memo" placeholder="Enter auction description..."></textarea>
+                    </div>
+
+                    <div class="full-width">
+                        <button type="submit" class="btn btn-primary">
+                            🚀 Create Auction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bid Auction Tab -->
+        <div id="bid" class="tab-content">
+            <div class="form-section">
+                <h2>💰 Place Bid (bidauction.a)</h2>
+                <p>Place a bid on an existing NFT auction</p>
+                
+                <form id="bidAuctionForm" class="form-grid">
+                    <div class="form-group">
+                        <label for="bid_token_id">🔢 Token ID</label>
+                        <input type="number" id="bid_token_id" placeholder="e.g., 1" required min="1">
+                        <div class="validation-message" id="bid_token_id_error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bid_bidder">👤 Bidder Account</label>
+                        <input type="text" id="bid_bidder" placeholder="e.g., bob" required>
+                        <div class="validation-message" id="bid_bidder_error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bid_amount">💰 Bid Amount (UOS)</label>
+                        <input type="text" id="bid_amount" placeholder="e.g., 10.00000000 UOS" required>
+                        <div class="validation-message" id="bid_amount_error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bid_receiver">📨 Receiver (Optional)</label>
+                        <input type="text" id="bid_receiver" placeholder="e.g., bob">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bid_promoter_id">📢 Promoter ID (Optional)</label>
+                        <input type="text" id="bid_promoter_id" placeholder="e.g., promoter123">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="bid_memo">📝 Memo</label>
+                        <textarea id="bid_memo" placeholder="Enter your bid comment..."></textarea>
+                    </div>
+
+                    <div class="full-width">
+                        <button type="submit" class="btn btn-success">
+                            💎 Place Bid
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Settle Auction Tab -->
+        <div id="settle" class="tab-content">
+            <div class="form-section">
+                <h2>✅ Settle Auction (settleauct.a)</h2>
+                <p>Settle an expired auction and complete the NFT transfer</p>
+                
+                <form id="settleAuctionForm" class="form-grid">
+                    <div class="form-group">
+                        <label for="settle_token_id">🔢 Token ID</label>
+                        <input type="number" id="settle_token_id" placeholder="e.g., 1" required min="1">
+                        <div class="validation-message" id="settle_token_id_error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="settle_executer">👤 Executer Account</label>
+                        <input type="text" id="settle_executer" placeholder="e.g., alice" required>
+                        <div class="validation-message" id="settle_executer_error"></div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="settle_memo">📝 Memo</label>
+                        <textarea id="settle_memo" placeholder="Enter settlement note..."></textarea>
+                    </div>
+
+                    <div class="full-width">
+                        <button type="submit" class="btn btn-warning">
+                            ⚡ Settle Auction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cancel Auction Tab -->
+        <div id="cancel" class="tab-content">
+            <div class="form-section">
+                <h2>❌ Cancel Auction (cancelauct.a)</h2>
+                <p>Cancel an auction that has no bids</p>
+                
+                <form id="cancelAuctionForm" class="form-grid">
+                    <div class="form-group">
+                        <label for="cancel_token_id">🔢 Token ID</label>
+                        <input type="number" id="cancel_token_id" placeholder="e.g., 1" required min="1">
+                        <div class="validation-message" id="cancel_token_id_error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cancel_canceler">👤 Canceler Account</label>
+                        <input type="text" id="cancel_canceler" placeholder="e.g., alice" required>
+                        <div class="validation-message" id="cancel_canceler_error"></div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="cancel_memo">📝 Memo</label>
+                        <textarea id="cancel_memo" placeholder="Enter cancellation reason..."></textarea>
+                    </div>
+
+                    <div class="full-width">
+                        <button type="submit" class="btn btn-danger">
+                            🗑️ Cancel Auction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Transaction Log Section -->
+        <div class="log-section">
+            <h3>
+                📋 Transaction Log
+                <button class="clear-logs-btn" onclick="clearLogs()">Clear Logs</button>
+            </h3>
+            <div class="log-entries" id="logEntries">
+                <div class="log-entry log-info">
+                    <span class="log-timestamp">Init</span>
+                    <span>Ultra NFT Auction Manager initialized successfully</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>Processing Transaction...</h3>
+            <p>Please wait while your transaction is being processed</p>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Ultra NFT Auction Management Application
+         * This application provides a complete interface for managing NFT auctions on Ultra blockchain
+         * Features: Create, Bid, Settle, and Cancel auctions
+         */
+
+        // ===== GLOBAL VARIABLES =====
+        let isConnected = false;
+        let connectedAccount = null;
+        let ultra = null;
+
+        /**
+         * Initialize the application when DOM is loaded
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Ultra NFT Auction Manager - Application Starting');
+            logMessage('Application initialized successfully', 'info');
+            
+            // Initialize Ultra wallet connection
+            initializeUltraConnection();
+            
+            // Set up form event listeners
+            setupFormListeners();
+            
+            // Set minimum date for date inputs to current date
+            setMinimumDates();
+            
+            console.log('✅ Application setup completed');
+        });
+
+        /**
+         * Initialize Ultra wallet connection
+         * Checks if Ultra wallet is available and sets up connection
+         */
+        async function initializeUltraConnection() {
+            console.log('🔌 Initializing Ultra wallet connection...');
+            
+            try {
+                // Check if Ultra wallet is available
+                if (typeof window.ultra !== 'undefined') {
+                    ultra = window.ultra;
+                    console.log('✅ Ultra wallet detected');
+                    logMessage('Ultra wallet detected and ready', 'success');
+                    
+                    // Check if already connected
+                    const account = await ultra.getAccount();
+                    if (account) {
+                        handleConnectionSuccess(account);
+                    }
+                } else {
+                    console.warn('⚠️ Ultra wallet not detected');
+                    logMessage('Ultra wallet not detected. Please install Ultra wallet extension.', 'warning');
+                }
+            } catch (error) {
+                console.error('❌ Error initializing Ultra connection:', error);
+                logMessage(`Error initializing Ultra connection: ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Set up form event listeners for all auction forms
+         */
+        function setupFormListeners() {
+            console.log('📝 Setting up form event listeners...');
+            
+            // Create Auction Form
+            document.getElementById('createAuctionForm').addEventListener('submit', handleCreateAuction);
+            
+            // Bid Auction Form
+            document.getElementById('bidAuctionForm').addEventListener('submit', handleBidAuction);
+            
+            // Settle Auction Form
+            document.getElementById('settleAuctionForm').addEventListener('submit', handleSettleAuction);
+            
+            // Cancel Auction Form
+            document.getElementById('cancelAuctionForm').addEventListener('submit', handleCancelAuction);
+            
+            // Connect Button
+            document.getElementById('connectBtn').addEventListener('click', connectToUltra);
+            
+            console.log('✅ Form event listeners setup completed');
+        }
+
+        /**
+         * Set minimum dates for date inputs to prevent past dates
+         */
+        function setMinimumDates() {
+            const now = new Date();
+            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            
+            document.getElementById('create_start_date').min = localDateTime;
+            document.getElementById('create_expiry_date').min = localDateTime;
+            
+            console.log('📅 Minimum dates set for date inputs');
+        }
+
+        /**
+         * Connect to Ultra wallet
+         */
+        async function connectToUltra() {
+            console.log('🔗 Attempting to connect to Ultra wallet...');
+            logMessage('Attempting to connect to Ultra wallet...', 'info');
+            
+            try {
+                if (!ultra) {
+                    throw new Error('Ultra wallet not detected. Please install Ultra wallet extension.');
+                }
+                
+                // Request connection
+                const account = await ultra.connect();
+                handleConnectionSuccess(account);
+                
+            } catch (error) {
+                console.error('❌ Failed to connect to Ultra wallet:', error);
+                logMessage(`Failed to connect to Ultra wallet: ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Handle successful Ultra wallet connection
+         * @param {Object} account - Connected account object
+         */
+        function handleConnectionSuccess(account) {
+            console.log('✅ Successfully connected to Ultra wallet:', account);
+            
+            isConnected = true;
+            connectedAccount = account;
+            
+            // Update UI
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.className = 'connection-status connected';
+            statusElement.innerHTML = `✅ Connected to Ultra wallet: ${account.accountName}`;
+            
+            const connectBtn = document.getElementById('connectBtn');
+            connectBtn.innerHTML = '🔗 Connected';
+            connectBtn.disabled = true;
+            
+            // Auto-fill account fields
+            autoFillAccountFields(account.accountName);
+            
+            logMessage(`Successfully connected to Ultra wallet: ${account.accountName}`, 'success');
+        }
+
+        /**
+         * Auto-fill account fields with connected account name
+         * @param {string} accountName - Connected account name
+         */
+        function autoFillAccountFields(accountName) {
+            console.log('🔄 Auto-filling account fields with connected account:', accountName);
+            
+            // Fill owner/account fields
+            document.getElementById('create_owner').value = accountName;
+            document.getElementById('bid_bidder').value = accountName;
+            document.getElementById('settle_executer').value = accountName;
+            document.getElementById('cancel_canceler').value = accountName;
+        }
+
+        /**
+         * Show specific tab and hide others
+         * @param {string} tabName - Name of the tab to show
+         */
+        function showTab(tabName) {
+            console.log(`🔄 Switching to tab: ${tabName}`);
+            
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab button
+            event.target.classList.add('active');
+            
+            logMessage(`Switched to ${tabName} tab`, 'info');
+        }
+
+        /**
+         * Handle Create Auction form submission
+         * @param {Event} event - Form submit event
+         */
+        async function handleCreateAuction(event) {
+            event.preventDefault();
+            console.log('🏗️ Processing create auction request...');
+            
+            try {
+                // Validate connection
+                if (!isConnected) {
+                    throw new Error('Please connect to Ultra wallet first');
+                }
+                
+                // Get form data
+                const formData = getCreateAuctionFormData();
+                
+                // Validate form data
+                if (!validateCreateAuctionData(formData)) {
+                    return;
+                }
+                
+                // Show loading overlay
+                showLoading();
+                
+                // Prepare transaction data
+                const transactionData = {
+                    account: 'eosio.nft.ft',
+                    name: 'createauct.a',
+                    authorization: [{ actor: formData.owner, permission: 'active' }],
+                    data: {
+                        create: {
+                            owner: formData.owner,
+                            token_id: parseInt(formData.token_id),
+                            starting_price: formData.starting_price,
+                            promoter_basis_point: parseInt(formData.promoter_basis_point),
+                            start_date: formData.start_date || null,
+                            expiry_date: formData.expiry_date,
+                            memo: formData.memo
+                        }
+                    }
+                };
+                
+                console.log('📤 Sending create auction transaction:', transactionData);
+                logMessage('Creating auction transaction...', 'info');
+                
+                // Execute transaction
+                const result = await ultra.signTransaction([transactionData], {
+                    blocksBehind: 3,
+                    expireSeconds: 30
+                });
+                
+                console.log('✅ Create auction transaction successful:', result);
+                logMessage(`Auction created successfully! Transaction ID: ${result.transaction_id}`, 'success');
+                
+                // Reset form
+                document.getElementById('createAuctionForm').reset();
+                
+            } catch (error) {
+                console.error('❌ Create auction transaction failed:', error);
+                logMessage(`Failed to create auction: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        /**
+         * Get form data from create auction form
+         * @returns {Object} Form data object
+         */
+        function getCreateAuctionFormData() {
+            return {
+                owner: document.getElementById('create_owner').value.trim(),
+                token_id: document.getElementById('create_token_id').value.trim(),
+                starting_price: document.getElementById('create_starting_price').value.trim(),
+                promoter_basis_point: document.getElementById('create_promoter_bp').value.trim(),
+                start_date: document.getElementById('create_start_date').value || null,
+                expiry_date: document.getElementById('create_expiry_date').value,
+                memo: document.getElementById('create_memo').value.trim()
+            };
+        }
+
+        /**
+         * Validate create auction form data
+         * @param {Object} data - Form data to validate
+         * @returns {boolean} Validation result
+         */
+        function validateCreateAuctionData(data) {
+            console.log('🔍 Validating create auction data:', data);
+            
+            let isValid = true;
+            
+            // Clear previous errors
+            clearValidationErrors('create');
+            
+            // Validate owner
+            if (!data.owner) {
+                showValidationError('create_owner', 'Owner is required');
+                isValid = false;
+            }
+            
+            // Validate token_id
+            if (!data.token_id || data.token_id <= 0) {
+                showValidationError('create_token_id', 'Valid token ID is required');
+                isValid = false;
+            }
+            
+            // Validate starting_price
+            if (!data.starting_price || !data.starting_price.includes('UOS')) {
+                showValidationError('create_starting_price', 'Starting price must include UOS (e.g., 2.00000000 UOS)');
+                isValid = false;
+            }
+            
+            // Validate promoter_basis_point
+            const promoterBp = parseInt(data.promoter_basis_point);
+            if (promoterBp < 200 || promoterBp > 1000) {
+                showValidationError('create_promoter_bp', 'Promoter basis points must be between 200 and 1000');
+                isValid = false;
+            }
+            
+            // Validate expiry_date
+            if (!data.expiry_date) {
+                showValidationError('create_expiry_date', 'Expiry date is required');
+                isValid = false;
+            } else {
+                const expiryDate = new Date(data.expiry_date);
+                const now = new Date();
+                if (expiryDate <= now) {
+                    showValidationError('create_expiry_date', 'Expiry date must be in the future');
+                    isValid = false;
+                }
+            }
+            
+            console.log('🔍 Create auction validation result:', isValid);
+            return isValid;
+        }
+
+        /**
+         * Handle Bid Auction form submission
+         * @param {Event} event - Form submit event
+         */
+        async function handleBidAuction(event) {
+            event.preventDefault();
+            console.log('💰 Processing bid auction request...');
+            
+            try {
+                // Validate connection
+                if (!isConnected) {
+                    throw new Error('Please connect to Ultra wallet first');
+                }
+                
+                // Get form data
+                const formData = getBidAuctionFormData();
+                
+                // Validate form data
+                if (!validateBidAuctionData(formData)) {
+                    return;
+                }
+                
+                // Show loading overlay
+                showLoading();
+                
+                // Prepare transaction data
+                const transactionData = {
+                    account: 'eosio.nft.ft',
+                    name: 'bidauction.a',
+                    authorization: [{ actor: formData.bidder, permission: 'active' }],
+                    data: {
+                        bid: {
+                            token_id: parseInt(formData.token_id),
+                            bidder: formData.bidder,
+                            receiver: formData.receiver || null,
+                            bid: formData.bid,
+                            promoter_id: formData.promoter_id || null,
+                            memo: formData.memo
+                        }
+                    }
+                };
+                
+                console.log('📤 Sending bid auction transaction:', transactionData);
+                logMessage('Placing bid on auction...', 'info');
+                
+                // Execute transaction
+                const result = await ultra.signTransaction([transactionData], {
+                    blocksBehind: 3,
+                    expireSeconds: 30
+                });
+                
+                console.log('✅ Bid auction transaction successful:', result);
+                logMessage(`Bid placed successfully! Transaction ID: ${result.transaction_id}`, 'success');
+                
+                // Reset form
+                document.getElementById('bidAuctionForm').reset();
+                
+            } catch (error) {
+                console.error('❌ Bid auction transaction failed:', error);
+                logMessage(`Failed to place bid: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        /**
+         * Get form data from bid auction form
+         * @returns {Object} Form data object
+         */
+        function getBidAuctionFormData() {
+            return {
+                token_id: document.getElementById('bid_token_id').value.trim(),
+                bidder: document.getElementById('bid_bidder').value.trim(),
+                bid: document.getElementById('bid_amount').value.trim(),
+                receiver: document.getElementById('bid_receiver').value.trim(),
+                promoter_id: document.getElementById('bid_promoter_id').value.trim(),
+                memo: document.getElementById('bid_memo').value.trim()
+            };
+        }
+
+        /**
+         * Validate bid auction form data
+         * @param {Object} data - Form data to validate
+         * @returns {boolean} Validation result
+         */
+        function validateBidAuctionData(data) {
+            console.log('🔍 Validating bid auction data:', data);
+            
+            let isValid = true;
+            
+            // Clear previous errors
+            clearValidationErrors('bid');
+            
+            // Validate token_id
+            if (!data.token_id || data.token_id <= 0) {
+                showValidationError('bid_token_id', 'Valid token ID is required');
+                isValid = false;
+            }
+            
+            // Validate bidder
+            if (!data.bidder) {
+                showValidationError('bid_bidder', 'Bidder account is required');
+                isValid = false;
+            }
+            
+            // Validate bid amount
+            if (!data.bid || !data.bid.includes('UOS')) {
+                showValidationError('bid_amount', 'Bid amount must include UOS (e.g., 10.00000000 UOS)');
+                isValid = false;
+            }
+            
+            console.log('🔍 Bid auction validation result:', isValid);
+            return isValid;
+        }
+
+        /**
+         * Handle Settle Auction form submission
+         * @param {Event} event - Form submit event
+         */
+        async function handleSettleAuction(event) {
+            event.preventDefault();
+            console.log('✅ Processing settle auction request...');
+            
+            try {
+                // Validate connection
+                if (!isConnected) {
+                    throw new Error('Please connect to Ultra wallet first');
+                }
+                
+                // Get form data
+                const formData = getSettleAuctionFormData();
+                
+                // Validate form data
+                if (!validateSettleAuctionData(formData)) {
+                    return;
+                }
+                
+                // Show loading overlay
+                showLoading();
+                
+                // Prepare transaction data
+                const transactionData = {
+                    account: 'eosio.nft.ft',
+                    name: 'settleauct.a',
+                    authorization: [{ actor: formData.executer, permission: 'active' }],
+                    data: {
+                        token_id: parseInt(formData.token_id),
+                        executer: formData.executer,
+                        memo: formData.memo
+                    }
+                };
+                
+                console.log('📤 Sending settle auction transaction:', transactionData);
+                logMessage('Settling auction...', 'info');
+                
+                // Execute transaction
+                const result = await ultra.signTransaction([transactionData], {
+                    blocksBehind: 3,
+                    expireSeconds: 30
+                });
+                
+                console.log('✅ Settle auction transaction successful:', result);
+                logMessage(`Auction settled successfully! Transaction ID: ${result.transaction_id}`, 'success');
+                
+                // Reset form
+                document.getElementById('settleAuctionForm').reset();
+                
+            } catch (error) {
+                console.error('❌ Settle auction transaction failed:', error);
+                logMessage(`Failed to settle auction: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        /**
+         * Get form data from settle auction form
+         * @returns {Object} Form data object
+         */
+        function getSettleAuctionFormData() {
+            return {
+                token_id: document.getElementById('settle_token_id').value.trim(),
+                executer: document.getElementById('settle_executer').value.trim(),
+                memo: document.getElementById('settle_memo').value.trim()
+            };
+        }
+
+        /**
+         * Validate settle auction form data
+         * @param {Object} data - Form data to validate
+         * @returns {boolean} Validation result
+         */
+        function validateSettleAuctionData(data) {
+            console.log('🔍 Validating settle auction data:', data);
+            
+            let isValid = true;
+            
+            // Clear previous errors
+            clearValidationErrors('settle');
+            
+            // Validate token_id
+            if (!data.token_id || data.token_id <= 0) {
+                showValidationError('settle_token_id', 'Valid token ID is required');
+                isValid = false;
+            }
+            
+            // Validate executer
+            if (!data.executer) {
+                showValidationError('settle_executer', 'Executer account is required');
+                isValid = false;
+            }
+            
+            console.log('🔍 Settle auction validation result:', isValid);
+            return isValid;
+        }
+
+        /**
+         * Handle Cancel Auction form submission
+         * @param {Event} event - Form submit event
+         */
+        async function handleCancelAuction(event) {
+            event.preventDefault();
+            console.log('❌ Processing cancel auction request...');
+            
+            try {
+                // Validate connection
+                if (!isConnected) {
+                    throw new Error('Please connect to Ultra wallet first');
+                }
+                
+                // Get form data
+                const formData = getCancelAuctionFormData();
+                
+                // Validate form data
+                if (!validateCancelAuctionData(formData)) {
+                    return;
+                }
+                
+                // Show loading overlay
+                showLoading();
+                
+                // Prepare transaction data
+                const transactionData = {
+                    account: 'eosio.nft.ft',
+                    name: 'cancelauct.a',
+                    authorization: [{ actor: formData.canceler, permission: 'active' }],
+                    data: {
+                        token_id: parseInt(formData.token_id),
+                        canceler: formData.canceler,
+                        memo: formData.memo
+                    }
+                };
+                
+                console.log('📤 Sending cancel auction transaction:', transactionData);
+                logMessage('Canceling auction...', 'info');
+                
+                // Execute transaction
+                const result = await ultra.signTransaction([transactionData], {
+                    blocksBehind: 3,
+                    expireSeconds: 30
+                });
+                
+                console.log('✅ Cancel auction transaction successful:', result);
+                logMessage(`Auction canceled successfully! Transaction ID: ${result.transaction_id}`, 'success');
+                
+                // Reset form
+                document.getElementById('cancelAuctionForm').reset();
+                
+            } catch (error) {
+                console.error('❌ Cancel auction transaction failed:', error);
+                logMessage(`Failed to cancel auction: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        /**
+         * Get form data from cancel auction form
+         * @returns {Object} Form data object
+         */
+        function getCancelAuctionFormData() {
+            return {
+                token_id: document.getElementById('cancel_token_id').value.trim(),
+                canceler: document.getElementById('cancel_canceler').value.trim(),
+                memo: document.getElementById('cancel_memo').value.trim()
+            };
+        }
+
+        /**
+         * Validate cancel auction form data
+         * @param {Object} data - Form data to validate
+         * @returns {boolean} Validation result
+         */
+        function validateCancelAuctionData(data) {
+            console.log('🔍 Validating cancel auction data:', data);
+            
+            let isValid = true;
+            
+            // Clear previous errors
+            clearValidationErrors('cancel');
+            
+            // Validate token_id
+            if (!data.token_id || data.token_id <= 0) {
+                showValidationError('cancel_token_id', 'Valid token ID is required');
+                isValid = false;
+            }
+            
+            // Validate canceler
+            if (!data.canceler) {
+                showValidationError('cancel_canceler', 'Canceler account is required');
+                isValid = false;
+            }
+            
+            console.log('🔍 Cancel auction validation result:', isValid);
+            return isValid;
+        }
+
+        /**
+         * Show validation error message
+         * @param {string} fieldId - Field ID to show error for
+         * @param {string} message - Error message to display
+         */
+        function showValidationError(fieldId, message) {
+            const errorElement = document.getElementById(fieldId + '_error');
+            if (errorElement) {
+                errorElement.textContent = message;
+                console.log(`❌ Validation error for ${fieldId}: ${message}`);
+            }
+        }
+
+        /**
+         * Clear validation errors for a specific prefix
+         * @param {string} prefix - Prefix to clear errors for
+         */
+        function clearValidationErrors(prefix) {
+            const errorElements = document.querySelectorAll(`[id^="${prefix}_"][id$="_error"]`);
+            errorElements.forEach(element => {
+                element.textContent = '';
+            });
+        }
+
+        /**
+         * Show loading overlay
+         */
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            console.log('⏳ Loading overlay shown');
+        }
+
+        /**
+         * Hide loading overlay
+         */
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            console.log('⏳ Loading overlay hidden');
+        }
+
+        /**
+         * Log message to console and transaction log
+         * @param {string} message - Message to log
+         * @param {string} type - Type of message (info, success, error, warning)
+         */
+        function logMessage(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.innerHTML = `
+                <span class="log-timestamp">${timestamp}</span>
+                <span>${message}</span>
+            `;
+            
+            const logEntries = document.getElementById('logEntries');
+            logEntries.appendChild(logEntry);
+            
+            // Scroll to bottom
+            logEntries.scrollTop = logEntries.scrollHeight;
+            
+            // Limit log entries to 50
+            const entries = logEntries.querySelectorAll('.log-entry');
+            if (entries.length > 50) {
+                entries[0].remove();
+            }
+            
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        /**
+         * Clear all log entries
+         */
+        function clearLogs() {
+            const logEntries = document.getElementById('logEntries');
+            logEntries.innerHTML = '';
+            logMessage('Transaction log cleared', 'info');
+            console.log('🗑️ Transaction log cleared');
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+
+        /**
+         * Format date for Ultra blockchain
+         * @param {string} dateString - Date string to format
+         * @returns {string} Formatted date string
+         */
+        function formatDateForUltra(dateString) {
+            if (!dateString) return null;
+            const date = new Date(dateString);
+            return date.toISOString().replace('Z', '');
+        }
+
+        /**
+         * Validate UOS amount format
+         * @param {string} amount - Amount string to validate
+         * @returns {boolean} Validation result
+         */
+        function validateUOSAmount(amount) {
+            const regex = /^\d+\.\d{8}\s+UOS$/;
+            return regex.test(amount);
+        }
+
+        /**
+         * Format UOS amount
+         * @param {string} amount - Amount to format
+         * @returns {string} Formatted amount
+         */
+        function formatUOSAmount(amount) {
+            if (!amount.includes('UOS')) {
+                return `${parseFloat(amount).toFixed(8)} UOS`;
+            }
+            return amount;
+        }
+
+        // ===== ERROR HANDLING =====
+
+        /**
+         * Global error handler for unhandled promise rejections
+         */
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('❌ Unhandled promise rejection:', event.reason);
+            logMessage(`Unhandled error: ${event.reason}`, 'error');
+        });
+
+        /**
+         * Global error handler for JavaScript errors
+         */
+        window.addEventListener('error', function(event) {
+            console.error('❌ JavaScript error:', event.error);
+            logMessage(`JavaScript error: ${event.error.message}`, 'error');
+        });
+
+        // Log application startup
+        console.log('🎯 Ultra NFT Auction Manager - JavaScript loaded successfully');
+    </script>
+</body>
+</html>
