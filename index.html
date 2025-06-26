@@ -596,24 +596,26 @@
                 logMessage(`Failed to connect: ${error.message}`, 'error');
             }
         }
+function handleConnectionSuccess(account) {
+    isConnected = true;
 
-        function handleConnectionSuccess(account) {
-            isConnected = true;
-            connectedAccount = account;
-            
-            document.getElementById('connectionStatus').className = 'connection-status connected';
-            document.getElementById('connectionStatus').innerHTML = `✅ Connected: ${account.accountName}`;
-            document.getElementById('connectBtn').innerHTML = '🔗 Connected';
-            document.getElementById('connectBtn').disabled = true;
-            
-            // Auto-fill account fields
-            document.getElementById('create_owner').value = account.accountName;
-            document.getElementById('bid_bidder').value = account.accountName;
-            document.getElementById('settle_executer').value = account.accountName;
-            document.getElementById('cancel_canceler').value = account.accountName;
-            
-            logMessage(`Connected to Ultra wallet: ${account.accountName}`, 'success');
-        }
+    // ✅ استخراج الحساب من داخل account.data.blockchainid
+    connectedAccount = account.data?.blockchainid || account.accountName || "unknown";
+
+    document.getElementById('connectionStatus').className = 'connection-status connected';
+    document.getElementById('connectionStatus').innerHTML = `✅ Connected: ${connectedAccount}`;
+    document.getElementById('connectBtn').innerHTML = '🔗 Connected';
+    document.getElementById('connectBtn').disabled = true;
+
+    // Auto-fill account fields
+    document.getElementById('create_owner').value = connectedAccount;
+    document.getElementById('bid_bidder').value = connectedAccount;
+    document.getElementById('settle_executer').value = connectedAccount;
+    document.getElementById('cancel_canceler').value = connectedAccount;
+
+    logMessage(`Connected to Ultra wallet: ${connectedAccount}`, 'success');
+}
+
 
         function showTab(tabName) {
             // Hide all tabs
