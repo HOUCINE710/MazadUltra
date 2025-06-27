@@ -748,10 +748,16 @@ function getFormData(prefix) {
             value += ' UOS';
         }
 
+        // إضافة UOS تلقائيًا فقط لحقل amount في bidForm
+        if (prefix === 'bid' && key === 'amount' && !value.includes('UOS')) {
+            value += ' UOS';
+        }
+
         data[key] = value;
     });
     return data;
 }
+
 
 
 
