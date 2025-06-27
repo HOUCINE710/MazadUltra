@@ -563,13 +563,6 @@ async function initializeUltra() {
         if (typeof window.ultra !== 'undefined') {
             ultra = window.ultra;
             logMessage('Ultra wallet detected. Click connect to proceed.', 'success');
-
-            // ✅ محاولة استعادة الاتصال إذا كان مخزّن مسبقًا
-            if (localStorage.getItem('ultraConnected') === 'true') {
-                const account = await ultra.connect();
-                handleConnectionSuccess(account);
-                logMessage('🔁 Restored connection from previous session', 'success');
-            }
         } else {
             logMessage('Ultra wallet not detected. Please install Ultra wallet extension.', 'warning');
         }
@@ -577,6 +570,7 @@ async function initializeUltra() {
         logMessage(`Error initializing Ultra connection: ${error.message}`, 'error');
     }
 }
+
 
 
         function setupEventListeners() {
