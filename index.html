@@ -744,7 +744,7 @@ function handleConnectionSuccess(account) {
         let value = el.value.trim();
 
         // فقط لحقل starting_price في createForm
-        if (prefix === 'create' && key === 'starting_price' && !value.includes('UOS')) {
+        if (prefix === 'create' && key === 'create_starting_price' && !value.includes('UOS')) {
             value += ' UOS';
         }
 
