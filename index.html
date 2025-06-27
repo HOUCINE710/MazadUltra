@@ -659,7 +659,7 @@ function handleConnectionSuccess(account) {
                     transactionData = {
                         contract: 'eosio.nft.ft',
                         action: 'createauct.a',
-                        authorization: [data.owenr],
+                        authorization: [data.owner],
                         data: {
                             create: {
                                 owner: data.owner,
@@ -682,7 +682,7 @@ function handleConnectionSuccess(account) {
                     transactionData = {
                         contract: 'eosio.nft.ft',
                         action: 'bidauction.a',
-                        authorization: [data.owenr],
+                        authorization: [data.owner],
                         data: {
                             bid: {
                                 token_id: parseInt(data.token_id),
@@ -702,7 +702,7 @@ function handleConnectionSuccess(account) {
                     transactionData = {
                         contract: 'eosio.nft.ft',
                         action: 'settleauct.a',
-                        authorization: [data.owenr],
+                        authorization: [data.owner],
                         data: {
                             token_id: parseInt(data.token_id),
                             executer: data.executer,
@@ -717,7 +717,7 @@ function handleConnectionSuccess(account) {
                     transactionData = {
                         contract: 'eosio.nft.ft',
                         action: 'cancelauct.a',
-                        authorization: [data.owenr],
+                        authorization: [data.owner],
                         data: {
                             token_id: parseInt(data.token_id),
                             canceler: data.canceler,
