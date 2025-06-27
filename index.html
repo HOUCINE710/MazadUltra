@@ -653,6 +653,7 @@ function handleConnectionSuccess(account) {
 
                 if (formId === 'createForm') {
                     const data = getFormData('create');
+                     console.log("Create Form Data:", data); // ✅ هذا السطر يطبع البيانات في الكونسول
                     if (!validateForm(data, 'create')) return;
                     
                     transactionData = {
@@ -675,6 +676,7 @@ function handleConnectionSuccess(account) {
 
                 } else if (formId === 'bidForm') {
                     const data = getFormData('bid');
+                     console.log("Create Form Data:", data); // ✅ هذا السطر يطبع البيانات في الكونسول
                     if (!validateForm(data, 'bid')) return;
                     
                     transactionData = {
@@ -694,6 +696,7 @@ function handleConnectionSuccess(account) {
                     };
                 } else if (formId === 'settleForm') {
                     const data = getFormData('settle');
+                     console.log("Create Form Data:", data); // ✅ هذا السطر يطبع البيانات في الكونسول
                     if (!validateForm(data, 'settle')) return;
                     
                     transactionData = {
@@ -708,6 +711,7 @@ function handleConnectionSuccess(account) {
                     };
                 } else if (formId === 'cancelForm') {
                     const data = getFormData('cancel');
+                     console.log("Create Form Data:", data); // ✅ هذا السطر يطبع البيانات في الكونسول
                     if (!validateForm(data, 'cancel')) return;
                     
                     transactionData = {
