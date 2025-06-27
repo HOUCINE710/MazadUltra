@@ -412,7 +412,7 @@ https://cdn.jsdelivr.net/npm/eosjs@22.1.0/dist/index.min.js
                     </div>
                     <div class="form-group">
                         <label for="create_promoter_bp">📈 Promoter Basis Points (200-1000)</label>
-                        <input type="number" id="create_promoter_bp" min="200" max="1000" value="250" placeholder="250">
+                        <input type="number" id="create_promoter_basis_point" min="200" max="1000" value="250" placeholder="250">
                         <div class="validation-message" id="create_promoter_bp_error"></div>
                     </div>
                     <div class="form-group">
@@ -676,9 +676,9 @@ function handleConnectionSuccess(account) {
                     if (!validateForm(data, 'bid')) return;
                     
                     transactionData = {
-                        account: 'eosio.nft.ft',
-                        name: 'bidauction.a',
-                        authorization: [{ actor: data.bidder, permission: 'active' }],
+                        contract: 'eosio.nft.ft',
+                        action: 'bidauction.a',
+                        authorization: [data.owenr],
                         data: {
                             bid: {
                                 token_id: parseInt(data.token_id),
@@ -695,9 +695,9 @@ function handleConnectionSuccess(account) {
                     if (!validateForm(data, 'settle')) return;
                     
                     transactionData = {
-                        account: 'eosio.nft.ft',
-                        name: 'settleauct.a',
-                        authorization: [{ actor: data.executer, permission: 'active' }],
+                        contract: 'eosio.nft.ft',
+                        action: 'settleauct.a',
+                        authorization: [data.owenr],
                         data: {
                             token_id: parseInt(data.token_id),
                             executer: data.executer,
@@ -709,9 +709,9 @@ function handleConnectionSuccess(account) {
                     if (!validateForm(data, 'cancel')) return;
                     
                     transactionData = {
-                        account: 'eosio.nft.ft',
-                        name: 'cancelauct.a',
-                        authorization: [{ actor: data.canceler, permission: 'active' }],
+                        contract: 'eosio.nft.ft',
+                        action: 'cancelauct.a',
+                        authorization: [data.owenr],
                         data: {
                             token_id: parseInt(data.token_id),
                             canceler: data.canceler,
@@ -736,15 +736,23 @@ function handleConnectionSuccess(account) {
             }
         }
 
-        function getFormData(prefix) {
-            const data = {};
-            const elements = document.querySelectorAll(`#${prefix}Form input, #${prefix}Form textarea`);
-            elements.forEach(el => {
-                const key = el.id.replace(`${prefix}_`, '');
-                data[key] = el.value.trim();
-            });
-            return data;
+       function getFormData(prefix) {
+    const data = {};
+    const elements = document.querySelectorAll(`#${prefix}Form input, #${prefix}Form textarea`);
+    elements.forEach(el => {
+        const key = el.id.replace(`${prefix}_`, '');
+        let value = el.value.trim();
+
+        // فقط لحقل starting_price في createForm
+        if (prefix === 'create' && key === 'starting_price' && !value.includes('UOS')) {
+            value += ' UOS';
         }
+
+        data[key] = value;
+    });
+    return data;
+}
+
 
         function validateForm(data, type) {
             clearErrors(type);
