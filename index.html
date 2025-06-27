@@ -671,6 +671,8 @@ function handleConnectionSuccess(account) {
                             }
                         }
                     };
+                    console.log("promoter_basis_point:", parseInt(data.promoter_basis_point));
+
                 } else if (formId === 'bidForm') {
                     const data = getFormData('bid');
                     if (!validateForm(data, 'bid')) return;
