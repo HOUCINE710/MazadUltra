@@ -736,15 +736,15 @@ function handleConnectionSuccess(account) {
             }
         }
 
-       function getFormData(prefix) {
+function getFormData(prefix) {
     const data = {};
     const elements = document.querySelectorAll(`#${prefix}Form input, #${prefix}Form textarea`);
     elements.forEach(el => {
         const key = el.id.replace(`${prefix}_`, '');
         let value = el.value.trim();
 
-        // فقط لحقل starting_price في createForm
-        if (prefix === 'create' && key === 'create_starting_price' && !value.includes('UOS')) {
+        // إضافة UOS تلقائيًا فقط لحقل starting_price في createForm
+        if (prefix === 'create' && key === 'starting_price' && !value.includes('UOS')) {
             value += ' UOS';
         }
 
@@ -752,6 +752,7 @@ function handleConnectionSuccess(account) {
     });
     return data;
 }
+
 
 
         function validateForm(data, type) {
